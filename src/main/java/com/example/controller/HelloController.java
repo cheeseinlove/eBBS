@@ -7,6 +7,8 @@ import com.example.model.User;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.example.util.CasCounter.CasCounter;
+import com.example.util.CasCounter.SimulatedCAS;
 import com.example.util.MyBatisUtil;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -33,7 +35,8 @@ import javax.servlet.http.HttpSession;
 @Controller
 
 public class HelloController {
-    static int id = 2;
+    private CasCounter recounter=new CasCounter();
+//    static int id = 2;
     private UserMapper userMapper;
 
     @RequestMapping(value = "/welcome", method = RequestMethod.GET)
@@ -117,7 +120,9 @@ public class HelloController {
         Date sqlDate = new java.sql.Date(new Date().getTime());
         user.setUregtime(sqlDate);
         System.out.println(sqlDate);
-        user.setUid(++id);
+ recounter.value=new SimulatedCAS();
+ recounter.value.compareAndSet(0,0);
+        user.setUid(recounter.increment()-1);
         user.setUsex(1);
         user.setUhead("null");
         SqlSession sqlSession = MyBatisUtil.getSqlSession();
